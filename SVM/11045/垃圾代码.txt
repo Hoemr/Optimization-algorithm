@@ -1,0 +1,30 @@
+mse = 10^7;i = 1;
+zuobiao = -8:0.5:8;
+list_g_c = zeros(3,length(zuobiao));    % 所有g与c的组合即相应的均方偏差
+for  log2c = zuobiao
+    for log2g = zuobiao
+        % -v 交叉验证参数：在训练的时候需要，测试的时候不需要，否则出错
+        options = ['-v 3 -c ',num2str(2^log2c),' -g ',num2str(2^log2g),' -s 3 -p 0.01 -t 0'];
+        cv  = libsvmtrain(output_train,input_train,options);   % 返回的cv为均方偏差
+        list_g_c(:,i) = [log2c;log2g;cv];
+        i = i+1;
+        if cv < mse
+            mse = cv;    % 最小均方偏差
+            bestc = 2^log2c;    % 最佳的参数c
+            bestg = 2^log2g;   % 最佳的参数g
+        end
+    end
+end
+
+% 绘制g与c的图
+figure
+new_log2c = reshape(list_g_c(1,:),[length(zuobiao),length(zuobiao)]);   % 获取c，此时c为一个方阵
+new_log2g = reshape(list_g_c(2,:),[length(zuobiao),length(zuobiao)]);   % 获取g，此时g为一个方阵
+new_mse = reshape(list_g_c(3,:),[length(zuobiao),length(zuobiao)]);   % 获取g，此时g为一个方阵
+Q = surf(new_log2c,new_log2g,new_mse);
+xlabel('参数c关于2的对数log2c','fontweight','bold')
+ylabel('参数g关于2的对数log2g','fontweight','bold')
+zlabel('均方根误差','fontweight','bold')
+set(gca,'linewidth',1.1)
+grid on
+box on
