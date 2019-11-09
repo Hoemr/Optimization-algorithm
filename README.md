@@ -3,3 +3,4 @@
 
 # 目前有的算法
 1、差分进化算法(Python)
+2、支持向量机libsvm(Matlab)
